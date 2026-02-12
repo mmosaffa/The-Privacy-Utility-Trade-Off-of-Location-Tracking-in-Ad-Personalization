@@ -1,7 +1,6 @@
 # The-Privacy-Utility-Trade-Off-of-Location-Tracking-in-Ad-Personalization
 This researchstudies whether geographical and behavioral data function as complements or substitutes in achieving business objectives, emphasizing the value–privacy trade-off. Geography adds value when behavioral histories are sparse, but becomes a weak substitute as histories grow rich, offering limited incremental gains relative to privacy risk.
 
-# Geographic vs. Behavioral Information in Ad Personalization  
 ### Data, Models, and Policy Evaluation Pipeline
 
 This repository contains the full empirical pipeline for the research project studying **when and how geographic information adds value relative to behavioral data in ad personalization**. The code implements a modular, end-to-end workflow that moves from raw impression logs to counterfactual policy evaluation, mechanism tests, and final empirical results.
@@ -15,10 +14,15 @@ The project is designed for **transparency, reproducibility, and clear identific
 The repository consists of **six consecutive notebooks**, each corresponding to a distinct conceptual step in the analysis:
 
 ├── 1_GitHub_Data_Prepration.ipynb
+
 ├── 2_GitHub_LSTM_Training.ipynb
+
 ├── 3_GitHub_Propensity_Score.ipynb
+
 ├── 4_GitHub_Xgboost.ipynb
+
 ├── 5_GitHub_RSA_Mechanism.ipynb
+
 └── 6_GitHub_Empirical_Results.ipynb
 
 ---
