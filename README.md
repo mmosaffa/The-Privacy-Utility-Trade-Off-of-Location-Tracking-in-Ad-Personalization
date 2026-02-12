@@ -1,0 +1,2 @@
+# The-Privacy-Utility-Trade-Off-of-Location-Tracking-in-Ad-Personalization
+This researchstudies whether geographical and behavioral data function as complements or substitutes in achieving business objectives, emphasizing the value–privacy trade-off. Geography adds value when behavioral histories are sparse, but becomes a weak substitute as histories grow rich, offering limited incremental gains relative to privacy risk.
