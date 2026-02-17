@@ -1,15 +1,37 @@
 # The-Privacy-Utility-Trade-Off-of-Location-Tracking-in-Ad-Personalization
-This researchstudies whether geographical and behavioral data function as complements or substitutes in achieving business objectives, emphasizing the value–privacy trade-off. Geography adds value when behavioral histories are sparse, but becomes a weak substitute as histories grow rich, offering limited incremental gains relative to privacy risk.
+This research studies whether geographical and behavioral data function as complements or substitutes in achieving business objectives, emphasizing the value–privacy trade-off. Geography adds value when behavioral histories are sparse, but becomes a weak substitute as histories grow rich, offering limited incremental gains relative to privacy risk.
 
-### Data, Models, and Policy Evaluation Pipeline
+## Data, Models, and Policy Evaluation Pipeline
 
-This repository contains the full empirical pipeline for the research project studying **when and how geographic information adds value relative to behavioral data in ad personalization**. The code implements a modular, end-to-end workflow that moves from raw impression logs to counterfactual policy evaluation, mechanism tests, and final empirical results.
+This repository contains the **complete empirical pipeline** for the research paper studying the **value of geographical information relative to behavioral data in ad personalization**, and how this relationship evolves as users accumulate interaction histories. The project integrates **machine learning**, **causal inference**, and **spatial econometrics** to provide a transparent, reproducible analysis of when additional data in personalization systems is economically valuable and when it is redundant.
 
-The project is designed for **transparency, reproducibility, and clear identification**, with each stage isolated in a dedicated notebook.
+The guiding question of the paper is:
+
+> *When does location data provide incremental value in ad targeting, and when is its role subsumed by behavioral history?*
 
 ---
 
-## Project Structure
+### High-Level Pipeline
+
+The analysis proceeds in six consecutive stages, each implemented in a dedicated notebook. Together, these stages form an end-to-end workflow:
+
+Raw Impression Logs
+↓
+Data Preparation & Feature Engineering
+↓
+Sequential Behavioral Modeling
+↓
+Propensity Score Estimation
+↓
+Counterfactual Prediction & Policy Construction
+↓
+Mechanism Analysis (Residual Spatial Autocorrelation)
+↓
+Empirical Results & Policy Evaluation
+
+---
+
+### Project Structure
 
 The repository consists of **six consecutive notebooks**, each corresponding to a distinct conceptual step in the analysis:
 
@@ -32,18 +54,16 @@ The repository consists of **six consecutive notebooks**, each corresponding to 
 ### **1. Data Preparation & Feature Generation**
 **`1_GitHub_Data_Prepration.ipynb`**
 
-This notebook prepares the raw impression-level data for all downstream analyses.
+This notebook constructs the core analytical dataset at the **impression level**.
 
-Main tasks:
-- Cleans and standardizes raw logs (IDs, timestamps, locations).
-- Constructs **within-user chronological impression histories**.
-- Applies sample restrictions (e.g., first 150 impressions per user).
-- Generates feature sets corresponding to different information regimes:
-  - Contextual
-  - Geographical
-  - Behavioral
-  - Geographical + Behavioral
-- Encodes categorical variables and exports train/test datasets.
+It cleans raw ad impression logs, enforces consistent user-level ordering, and applies sample restrictions such as limiting analysis to the first 150 impressions per user. The notebook engineers covariates for four distinct information regimes:
+
+- **Contextual**: time, device, app, and environment variables.
+- **Geographical**: location identifiers and spatial attributes.
+- **Behavioral**: user interaction histories and past engagement.
+- **Geographical + Behavioral**: combined information set.
+
+Categorical variables are encoded, numerical features are scaled, and aligned train/test splits are created and reused throughout the project. The purpose of this step is to ensure that all downstream comparisons differ **only** in their information sets, not in sample composition or preprocessing choices.
 
 **Output:** Model-ready datasets used by all subsequent notebooks.
 
@@ -52,7 +72,9 @@ Main tasks:
 ### **2. Sequential Behavioral Modeling**
 **`2_GitHub_LSTM_Training.ipynb`**
 
-This notebook estimates the **behavioral signal** using sequence models.
+This notebook learns **behavioral representations** from user interaction histories using a sequential model.
+
+User impressions are organized into ordered sequences, and an **LSTM model** is trained to predict click probability based solely on past behavior. This approach captures learning dynamics, persistence, and heterogeneity that static models cannot represent. The notebook produces out-of-sample behavioral predictions that are later used both as inputs to targeting models and as controls in mechanism analysis. This step operationalizes the idea that behavioral data are inherently sequential and that their predictive power grows as histories accumulate.
 
 Main tasks:
 - Constructs ordered impression sequences at the user level.
@@ -67,7 +89,9 @@ Main tasks:
 ### **3. Propensity Score Estimation**
 **`3_GitHub_Propensity_Score.ipynb`**
 
-This notebook models the **logging policy** that generated observed ad assignments.
+This notebook estimates the **logging (assignment) policy** of the ad platform.
+
+It models the probability that each ad is shown in each impression, producing estimated propensity scores \( \hat{\pi}_D(a \mid i) \). These propensities define the support of the observed policy and form the basis for causal reweighting. By explicitly modeling the logging policy, this step corrects for non-random ad assignment and enables unbiased policy evaluation.
 
 Main tasks:
 - Estimates ad-level propensity scores \( \hat\pi_D(a \mid i) \).
@@ -83,8 +107,10 @@ Main tasks:
 
 This notebook generates **counterfactual outcomes** under alternative information regimes.
 
+Gradient-boosted tree models (XGBoost) are trained separately under each regime—contextual, geographical, behavioral, and geographical plus behavioral. For each impression, the models predict counterfactual click probabilities for all candidate ads. These predictions are then used to construct candidate targeting policies, providing the inputs needed for policy evaluation. This stage produces the full counterfactual prediction matrices used in subsequent analysis.
+
 Main tasks:
-- Trains XGBoost models using:
+- Trains XGBoost and LSTM models using:
   - Contextual features
   - Geographic features
   - Behavioral predictions
@@ -101,14 +127,15 @@ Main tasks:
 
 This notebook implements the paper’s core **mechanism test**.
 
+Impressions are aggregated to county and city levels, and observed clicks are residualized using behavioral predictions. The notebook then tests whether spatial dependence persists after conditioning on behavior using Moran’s I and Geary’s C. The analysis is conducted separately for users with **sparse** and **rich** behavioral histories.
+
+If spatial autocorrelation disappears after residualization, geographical variation primarily reflects unobserved preferences already captured by behavior. Persistent autocorrelation indicates independent geographic effects. This RSA framework provides a principled way to identify the channel through which geographical data creates value.
+
 Main tasks:
 - Aggregates outcomes to county and city levels.
 - Residualizes observed clicks using behavioral model predictions.
 - Tests for remaining spatial dependence using Moran’s I and Geary’s C.
 - Compares results for **sparse vs. rich behavioral histories**.
-
-**Interpretation:**  
-If spatial autocorrelation disappears after residualization, geography does not provide independent information beyond behavior.
 
 **Output:** Mechanism evidence supporting the interpretation of geographic effects.
 
@@ -117,7 +144,9 @@ If spatial autocorrelation disappears after residualization, geography does not 
 ### **6. Empirical Results & Policy Evaluation**
 **`6_GitHub_Empirical_Results.ipynb`**
 
-This notebook synthesizes all components into the paper’s main results.
+This notebook synthesizes all prior components and produces the **main empirical results** of the paper.
+
+Policy value is estimated using **Inverse Propensity Scoring (IPS)**, correcting for the logged assignment mechanism. The notebook evaluates targeting policies across information regimes, examines how value evolves with impression depth, and tests complementarity versus substitutability between geographical and behavioral data using difference-in-differences estimands. Inference is conducted with **cluster-robust standard errors** at the user level, and all main tables and figures in the paper are generated here.
 
 Main tasks:
 - Evaluates policy value using **Inverse Propensity Scoring (IPS)**.
@@ -141,14 +170,14 @@ Each notebook depends only on outputs from earlier stages, ensuring modularity a
 
 ## Requirements
 
-- Python 3.9+
-- pandas, numpy, scipy
-- scikit-learn
-- PyTorch (for LSTM)
-- xgboost
-- geopandas, libpysal, esda (for spatial analysis)
-- matplotlib, seaborn
+- **Python**: 3.9 or later  
+- **Core scientific stack**: `numpy`, `pandas`, `scipy`  
+- **Machine learning**: `scikit-learn`, `xgboost`  
+- **Deep learning**: `torch` (PyTorch; used for sequential LSTM behavioral modeling)  
+- **Spatial econometrics**: `geopandas`, `libpysal`, `esda`  
+- **Visualization**: `matplotlib`, `seaborn`  
 
+All experiments were run in a Python 3.9 environment. GPU support (CUDA) is optional but recommended for LSTM training.
 ---
 
 ## Reproducibility Notes
