@@ -16,17 +16,29 @@ The guiding question of the paper is:
 The analysis proceeds in six consecutive stages, each implemented in a dedicated notebook. Together, these stages form an end-to-end workflow:
 
 Raw Impression Logs
+
 ↓
+
 Data Preparation & Feature Engineering
+
 ↓
+
 Sequential Behavioral Modeling
+
 ↓
+
 Propensity Score Estimation
+
 ↓
+
 Counterfactual Prediction & Policy Construction
+
 ↓
+
 Mechanism Analysis (Residual Spatial Autocorrelation)
+
 ↓
+
 Empirical Results & Policy Evaluation
 
 ---
