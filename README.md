@@ -179,17 +179,49 @@ The pipeline follows a clear identification logic:
 Each notebook depends only on outputs from earlier stages, ensuring modularity and interpretability.
 
 ---
-
 ## Requirements
 
 - **Python**: 3.9 or later  
-- **Core scientific stack**: `numpy`, `pandas`, `scipy`  
-- **Machine learning**: `scikit-learn`, `xgboost`  
-- **Deep learning**: `torch` (PyTorch; used for sequential LSTM behavioral modeling)  
-- **Spatial econometrics**: `geopandas`, `libpysal`, `esda`  
-- **Visualization**: `matplotlib`, `seaborn`  
 
-### All experiments were run in a Python 3.9 environment. GPU support (CUDA) is optional but recommended for LSTM training.
+- **Core scientific computing**  
+  `numpy`, `pandas`, `scipy`  
+  (data manipulation, numerical computation, statistical inference)
+
+- **Machine learning (non-sequential models)**  
+  `scikit-learn`  
+  (data splitting, preprocessing, evaluation utilities)  
+  `xgboost`  
+  (contextual, geographical, and Geo+Behavioral policy models)
+
+- **Deep learning (sequential behavioral modeling)**  
+  `torch` (PyTorch)  
+  (LSTM-based sequence model for behavioral histories, training and inference)
+
+- **Econometrics and statistical modeling**  
+  `statsmodels`  
+  (Poisson GLMs, offset models, residual construction, clustered inference)
+
+- **Off-policy evaluation and inference**  
+  `scipy.stats`  
+  (t-tests, confidence intervals, hypothesis testing for IPS estimates)
+
+- **Spatial econometrics and GIS (RSA framework)**  
+  `geopandas`  
+  `shapely`  
+  `libpysal`  
+  `esda`  
+  (spatial joins, contiguity weights, Moran’s I, Geary’s C, permutation tests)
+
+- **Visualization**  
+  `matplotlib`, `seaborn`  
+  (policy lift plots, heterogeneity analyses, spatial residual maps)
+
+- **Utilities**  
+  `tqdm` (optional; progress bars)
+
+All experiments were executed in a **Python 3.9** environment.  
+GPU support (CUDA) is **optional** but recommended for efficient LSTM training; all other components run on CPU.
+
 ---
 
 ## Reproducibility Notes
