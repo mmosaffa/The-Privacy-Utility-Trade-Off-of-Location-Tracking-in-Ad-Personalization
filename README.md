@@ -189,7 +189,7 @@ Each notebook depends only on outputs from earlier stages, ensuring modularity a
 - **Spatial econometrics**: `geopandas`, `libpysal`, `esda`  
 - **Visualization**: `matplotlib`, `seaborn`  
 
-All experiments were run in a Python 3.9 environment. GPU support (CUDA) is optional but recommended for LSTM training.
+### All experiments were run in a Python 3.9 environment. GPU support (CUDA) is optional but recommended for LSTM training.
 ---
 
 ## Reproducibility Notes
